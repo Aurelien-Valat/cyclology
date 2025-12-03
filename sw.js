@@ -5,7 +5,6 @@ const urlsToCache = [
   '/style.css',
   '/script.js',
   '/icon.png',
-  '/add-col.mp3',
   '/manifest.json',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'

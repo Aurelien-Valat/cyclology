@@ -1,7 +1,6 @@
 import { signInWithGoogle, signOut } from './auth.js';
 import { getCols, addCol, updateCol, deleteCol, subscribe } from './store.js';
 import { initMapDisplay, initMapAdd, renderMapMarkers, updateAddFormMap } from './map.js';
-import { playAddSound } from './audio.js';
 import { knownCols } from './config.js';
 
 // --- DOM ELEMENTS ---
@@ -140,33 +139,93 @@ function fillFormForEdit(id) {
 
 async function handleFormSubmit(e) {
     e.preventDefault();
-    const formData = new FormData(addColForm);
+
+    // 1. Récupération des éléments pour la validation visuelle
+    // (On utilise getElementById car c'est ce que votre HTML attend pour afficher les erreurs)
+    const nameInput = document.getElementById("col-name-input");
+    const timeInput = document.getElementById("col-time-input");
+    const distanceInput = document.getElementById("col-distance-input");
+    const elevationInput = document.getElementById("col-elevation-input");
+    const dateInput = document.getElementById("col-date-input");
+    const latInput = document.getElementById("col-lat-input");
+    const lngInput = document.getElementById("col-lng-input");
+
+    // 2. Reset des erreurs visuelles
+    document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+    document.querySelectorAll("input").forEach(el => el.classList.remove("error"));
+
+    let hasError = false;
+
+    // --- LOGIQUE DE VALIDATION (Importée de main.js) ---
+
+    // Vérif nom obligatoire
+    if (!nameInput.value.trim()) {
+        document.getElementById("error-name").textContent = "❌ Le nom du col est requis";
+        nameInput.classList.add("error");
+        hasError = true;
+    }
+
+    // Vérif format temps HH:MM:SS
+    const timeRegex = /^([0-9]{1,2}):([0-5][0-9]):([0-5][0-9])$/;
+    if (timeInput.value && !timeRegex.test(timeInput.value.trim())) {
+        document.getElementById("error-time").textContent = "⏱ Format attendu : HH:MM:SS";
+        timeInput.classList.add("error");
+        hasError = true;
+    }
+
+    // Vérif distance
+    if (distanceInput.value && parseFloat(distanceInput.value) <= 0) {
+        document.getElementById("error-distance").textContent = "🚴 La distance doit être positive";
+        distanceInput.classList.add("error");
+        hasError = true;
+    }
+
+    // Vérif dénivelé
+    if (elevationInput.value && parseInt(elevationInput.value) <= 0) {
+        document.getElementById("error-elevation").textContent = "⛰️ Le dénivelé doit être positif";
+        elevationInput.classList.add("error");
+        hasError = true;
+    }
+
+    // Vérification Coordonnées (Important pour la carte)
+    if (!latInput.value || !lngInput.value) {
+        // On peut afficher une alerte ou un message générique si pas de champ d'erreur spécifique dans le HTML
+        alert("Veuillez sélectionner une position sur la carte ou entrer des coordonnées.");
+        hasError = true;
+    }
+
+    if (hasError) {
+        return; // On arrête tout ici si la validation échoue
+    }
+
+    // 3. Préparation des données (si tout est valide)
     const id = colIdInput.value;
     const colData = {
-        name: addColForm.querySelector('#col-name-input').value.trim(),
-        time: addColForm.querySelector('#col-time-input').value.trim() || null,
-        distance: parseFloat(addColForm.querySelector('#col-distance-input').value) || null,
-        elevation: parseInt(addColForm.querySelector('#col-elevation-input').value) || null,
-        date: addColForm.querySelector('#col-date-input').value || null,
-        lat: parseFloat(addColForm.querySelector('#col-lat-input').value),
-        lng: parseFloat(addColForm.querySelector('#col-lng-input').value)
+        name: nameInput.value.trim(),
+        time: timeInput.value.trim() || null,
+        distance: parseFloat(distanceInput.value) || null,
+        elevation: parseInt(elevationInput.value) || null,
+        date: dateInput.value || null,
+        lat: parseFloat(latInput.value),
+        lng: parseFloat(lngInput.value),
+        // On garde createdAt ou updatedAt selon le cas, géré par Firestore souvent,
+        // mais pour l'affichage local immédiat :
+        createdAt: new Date()
     };
 
-    if (!colData.name || isNaN(colData.lat) || isNaN(colData.lng)) {
-        alert("Veuillez entrer au moins un nom et des coordonnées valides.");
-        return;
-    }
-    
+    // 4. Envoi à Firebase
     try {
         if (id) {
             await updateCol(id, colData);
+            alert("Le col a bien été modifié !");
         } else {
             await addCol(colData);
+            alert("🎉 Félicitations. Vous avez franchi un nouveau col !");
         }
-        playAddSound();
         switchView('list-view');
         resetAddForm();
     } catch (error) {
+        console.error(error);
         alert("Une erreur est survenue lors de l'enregistrement.");
     }
 }
@@ -235,6 +294,15 @@ export function setupUI() {
     });
 
     addColForm.addEventListener('submit', handleFormSubmit);
+
+    // Bloquer les dates futures ===
+    const dateInput = document.getElementById('col-date-input');
+    const today = new Date();
+    // On formate la date au format YYYY-MM-DD requis par l'input HTML
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    dateInput.max = `${yyyy}-${mm}-${dd}`;
 
     setupAutocomplete();
 

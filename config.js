@@ -1,10 +1,3 @@
-// IMPORTANT: Replace with your actual Firebase project configuration
-// To make Google Sign-In work, you need to:
-// 1. Go to https://console.firebase.google.com/ and create a project.
-// 2. Add a Web App to your project to get your configuration keys.
-// 3. Paste your config keys below.
-// 4. In your Firebase project, go to "Authentication" -> "Sign-in method" and enable "Google".
-// 5. Under "Authentication" -> "Settings" -> "Authorized domains", add the domain you are using (e.g., localhost for local testing).
 export const firebaseConfig = {
   apiKey: "AIzaSyDsX7AdDdQXN9lWkiWYTV_TPj_lLver3FQ",
   authDomain: "cyclology-9cdd3.firebaseapp.com",
