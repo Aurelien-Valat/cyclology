@@ -1,0 +1,153 @@
+<html lang="fr">
+<head>
+    <!-- TODO quand erreur dans la saisie, ajoute 2 fois
+        TODO modif marche peut etre pas (ajoute aulieu de modifier)
+        TODO les cols sont plus affichés sur la carte
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Cols</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#333"/>
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <!-- Phosphor Icons for modern nav -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+</head>
+<body>
+
+    <header>
+        <h1>Cyclology</h1>
+        <div id="user-auth"></div>
+    </header>
+
+    <div id="login-view">
+        <div class="login-box">
+            <img src="icon.png" alt="Mes Cols Logo" class="login-logo">
+            <h2>Bienvenue sur Cyclology</h2>
+            <p>Connectez-vous pour enregistrer et suivre vos ascensions.</p>
+            <button id="google-signin-btn">
+                <img src="google_logo.png" alt="Google logo">
+                <span>Connexion avec Google</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="app-content" style="display: none;">
+        <main>
+            <!-- List View -->
+            <div id="list-view" class="view active">
+                <ul id="cols-list">
+                    <!-- Cols will be dynamically inserted here -->
+                </ul>
+                <p id="empty-list-message" class="empty-state">Vous n'avez ajouté aucun col. Allez dans l'onglet "Ajouter" pour commencer !</p>
+            </div>
+
+            <!-- Map View -->
+            <div id="map-view" class="view">
+                <div id="map-display"></div>
+                 <p id="empty-map-message" class="empty-state">Aucun col à afficher sur la carte.</p>
+            </div>
+
+            <!-- Add View -->
+            <div id="add-view" class="view">
+                <form id="add-col-form" >
+                    <h2>Ajouter un col</h2>
+
+                    <div class="form-group autocomplete-container">
+                        <label for="col-name-input">Nom du col</label>
+                        <input type="text" id="col-name-input" placeholder="Ex: Col du Tourmalet" required>
+                        <div id="col-suggestions"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="col-time-input">Temps d'ascension</label>
+                            <input type="text" id="col-time-input" placeholder="HH:MM:SS" pattern="\d{2,}:\d{2}:\d{2}" title="Le format doit être HH:MM:SS" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="col-distance-input">Distance (km)</label>
+                            <input type="number" step="0.1" id="col-distance-input" placeholder="Ex: 18.6" min="0" required>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="col-elevation-input">Dénivelé (m)</label>
+                        <input type="number" id="col-elevation-input" placeholder="Ex: 1268" min="0" required>
+                     </div>
+                    
+                    <div class="form-group">
+                        <label for="col-date-input">Date</label>
+                        <input type="date" id="col-date-input">
+                    </div>
+
+                    <div class="location-picker">
+                        <h3>Localisation</h3>
+                        <div class="location-tabs">
+                            <button type="button" class="tab-btn active" data-tab="map">Choisir sur la carte</button>
+                            <button type="button" class="tab-btn" data-tab="coords">Coordonnées manuelles</button>
+                        </div>
+                        <div class="tab-content active" id="map-tab">
+                            <div id="map-add"></div>
+                            <p class="map-instruction">Cliquez sur la carte pour placer le marqueur.</p>
+                        </div>
+                        <div class="tab-content" id="coords-tab">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="col-lat-input">Latitude</label>
+                                    <input type="number" step="any" id="col-lat-input" placeholder="Ex: 42.9083">
+                                </div>
+                                <div class="form-group">
+                                    <label for="col-lng-input">Longitude</label>
+                                    <input type="number" step="any" id="col-lng-input" placeholder="Ex: 0.1214">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <input type="hidden" id="col-id-input">
+
+                    <button type="submit" class="btn-primary">Enregistrer le col</button>
+                </form>
+            </div>
+        </main>
+
+        <nav>
+            <button id="nav-list" class="active" title="Liste"><i class="ph-bold ph-list"></i><span>Liste</span></button>
+            <button id="nav-map" title="Carte"><i class="ph-bold ph-map-trifold"></i><span>Carte</span></button>
+            <button id="nav-add" title="Ajouter"><i class="ph-bold ph-plus-circle"></i><span>Ajouter</span></button>
+        </nav>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+    
+    <script type="importmap">
+    {
+      "imports": {
+        "./config.js": "./config.js",
+        "./firebase.js": "./firebase.js",
+        "./auth.js": "./auth.js",
+        "./store.js": "./store.js",
+        "./ui.js": "./ui.js",
+        "./map.js": "./map.js",
+        "./audio.js": "./audio.js"
+      }
+    }
+    </script>
+    <script type="module" src="main.js"></script>
+
+</body>
+</html>

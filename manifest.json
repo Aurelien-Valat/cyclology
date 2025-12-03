@@ -1,0 +1,18 @@
+{
+  "name": "Cyclology",
+  "short_name": "Cyclology",
+  "description": "Une application pour suivre les cols de montagne que vous avez grimpés à vélo.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ecf0f1",
+  "theme_color": "#2c3e50",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
+
