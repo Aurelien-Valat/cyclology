@@ -1,4 +1,4 @@
-🚵‍♂️ Cyclology : https://cyclology-9cdd3.web.app/
+🚵‍♂️ Cyclology
 
 Cyclology est une Progressive Web App (PWA) conçue pour les cyclistes passionnés de montagne. Elle permet d'enregistrer, de suivre et de visualiser sur une carte tous les cols que vous avez gravis.
 
@@ -25,6 +25,5 @@ Ajout Intuitif :
 - Cartographie : Leaflet.js.
 
 - Backend : Firebase (Firestore Database & Authentication).
-
 
 - Icônes : Phosphor Icons.

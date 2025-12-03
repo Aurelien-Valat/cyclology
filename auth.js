@@ -24,3 +24,13 @@ export function signOut() {
 export function onAuthStateChanged(callback) {
     auth.onAuthStateChanged(callback);
 }
+
+/**
+ * Supprime le compte de l'utilisateur courant.
+ */
+export async function deleteUserAccount() {
+    const user = auth.currentUser;
+    if (user) {
+        await user.delete();
+    }
+}

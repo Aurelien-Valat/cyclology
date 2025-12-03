@@ -98,3 +98,24 @@ export async function deleteCol(id) {
  * @returns {Array} The array of col objects.
  */
 export const getCols = () => cols;
+
+/**
+ * Supprime toutes les données (cols) d'un utilisateur.
+ * @param {string} userId - L'UID de l'utilisateur.
+ */
+export async function deleteUserData(userId) {
+    if (!userId) return;
+    const userColsRef = db.collection('users').doc(userId).collection('cols');
+
+    // On récupère tout et on supprime par lot (batch)
+    const snapshot = await userColsRef.get();
+    if (snapshot.empty) return;
+
+    const batch = db.batch();
+    snapshot.docs.forEach(doc => {
+        batch.delete(doc.ref);
+    });
+
+    await batch.commit();
+    clearCols(); // Vide l'état local
+}

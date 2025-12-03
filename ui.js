@@ -1,6 +1,6 @@
-import { signInWithGoogle, signOut } from './auth.js';
-import { getCols, addCol, updateCol, deleteCol, subscribe } from './store.js';
+import { signInWithGoogle, signOut, deleteUserAccount } from './auth.js';
 import { initMapDisplay, initMapAdd, renderMapMarkers, updateAddFormMap } from './map.js';
+import { getCols, addCol, updateCol, deleteCol, subscribe, deleteUserData } from './store.js';
 import { knownCols } from './config.js';
 
 // --- DOM ELEMENTS ---
@@ -72,11 +72,60 @@ export function showLogin() {
 }
 
 export function showApp(user) {
+    // On remplace le bouton logout simple par une structure avec menu déroulant
     userAuthDiv.innerHTML = `
-        <img id="user-photo" src="${user.photoURL}" alt="User photo">
-        <button id="logout-btn" title="Déconnexion"><i class="ph-bold ph-sign-out"></i></button>
+        <div class="user-menu-container" id="user-menu-trigger">
+            <img id="user-photo" src="${user.photoURL}" alt="User photo" title="Ouvrir le menu">
+            <button id="logout-btn" title="Déconnexion"><i class="ph-bold ph-sign-out"></i></button>
+
+            <div id="user-dropdown" class="user-dropdown">
+                <button id="delete-account-btn" class="danger">Supprimer le compte</button>
+            </div>
+        </div>
     `;
-    document.getElementById('logout-btn').addEventListener('click', signOut);
+
+    const trigger = document.getElementById('user-menu-trigger');
+    const dropdown = document.getElementById('user-dropdown');
+    const logoutBtn = document.getElementById('logout-btn');
+    const deleteBtn = document.getElementById('delete-account-btn');
+
+    // 1. Ouvrir/Fermer le menu au clic sur la photo
+    trigger.addEventListener('click', (e) => {
+        // Empêche le clic sur les boutons de fermer immédiatement le menu (propagation)
+        if(e.target.tagName === 'BUTTON') return;
+        dropdown.classList.toggle('active');
+        e.stopPropagation(); // Empêche le clic de remonter au document
+    });
+
+    // 2. Fermer le menu si on clique ailleurs sur la page
+    document.addEventListener('click', () => {
+        dropdown.classList.remove('active');
+    });
+
+    // 3. Action Déconnexion
+    logoutBtn.addEventListener('click', signOut);
+
+    // 4. Action Fermer le compte
+    deleteBtn.addEventListener('click', async () => {
+        if (confirm("⚠️ Attention !\n\nVous êtes sur le point de supprimer définitivement votre compte et tous vos cols enregistrés.\n\nCette action est irréversible. Voulez-vous continuer ?")) {
+            try {
+                // Étape 1 : Supprimer les données (cols)
+                await deleteUserData(user.uid);
+                // Étape 2 : Supprimer le compte Auth
+                await deleteUserAccount();
+                alert("Votre compte a été supprimé.");
+                // La redirection vers le login se fera automatiquement via onAuthStateChanged
+            } catch (error) {
+                console.error("Erreur suppression:", error);
+                if (error.code === 'auth/requires-recent-login') {
+                    alert("Sécurité : Veuillez vous déconnecter et vous reconnecter avant de pouvoir supprimer votre compte.");
+                } else {
+                    alert("Une erreur est survenue lors de la suppression. Veuillez réessayer.");
+                }
+            }
+        }
+    });
+
     loginView.style.display = 'none';
     appContent.style.display = 'flex';
     switchView('list-view');
