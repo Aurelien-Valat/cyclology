@@ -1,9 +1,9 @@
-const CACHE_NAME = 'mes-cols-cache-v1';
+const CACHE_NAME = 'mes-cols-cache-v2';
 const urlsToCache = [
   '/',
   '/index.html',
   '/style.css',
-  '/script.js',
+  '/main.js',
   '/icon.png',
   '/manifest.json',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
