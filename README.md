@@ -1,29 +1,22 @@
-🚵‍♂️ Cyclology
+# 🚵‍♂️ Cyclology
 
 Cyclology est une Progressive Web App (PWA) conçue pour les cyclistes passionnés de montagne. Elle permet d'enregistrer, de suivre et de visualiser sur une carte tous les cols que vous avez gravis.
 
-✨ Fonctionnalités :
+[Accéder à Cyclology](https://cyclology-9cdd3.web.app/)
 
-- Authentification Google : Connectez-vous simplement pour sauvegarder vos données dans le cloud.
+## ✨ Fonctionnalités :
 
-- Carte Interactive : Visualisez tous vos cols gravis sur une carte (basée sur OpenStreetMap & Leaflet).
+- **Authentification Google** : Connectez-vous simplement pour sauvegarder vos données.
+- **Carte Interactive** : Visualisez tous vos cols gravis sur une carte (basée sur OpenStreetMap & Leaflet).
+- **Suivi des Statistiques** : Enregistrez le temps, la distance, le dénivelé et la date de chaque ascension. L'application calcule automatiquement le pourcentage moyen de la pente.
+- **Saisie Intelligente** : Auto-complétion pour les cols mythiques (Tourmalet, Galibier, etc.) et sélecteur de position sur carte.
+- **Expérience PWA** : Utilisable sur ordinateur et mobile, installable comme une application native.
 
-- Suivi des Statistiques : Enregistrez le temps, la distance, le dénivelé et la date de chaque ascension. L'application calcule automatiquement le pourcentage moyen de la pente.
 
-Ajout Intuitif :
+## 🛠 Technologies Utilisées
 
-- Saisie manuelle ou sélection de la position sur la carte.
-
-- Auto-complétion pour les cols célèbres (Tourmalet, Galibier, Ventoux, etc.).
-
-- Mode Liste : Consultez l'historique de vos sorties triées par date.
-
-🛠 Technologies Utilisées
-
-- Frontend : HTML5, CSS3, JavaScript.
-
-- Cartographie : Leaflet.js.
-
-- Backend : Firebase (Firestore Database & Authentication).
-
-- Icônes : Phosphor Icons.
+- **Frontend** : HTML5, CSS3, JavaScript.
+- **Cartographie** : Leaflet.js.
+- **Backend** : Firebase (Firestore Database & Authentication).
+- **Icônes** : Phosphor Icons.
+- **Hosting** : Firebase Hosting

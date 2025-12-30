@@ -33,8 +33,8 @@ body {
 #app-content {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-    height: calc(100vh - 58px); /* Full height minus header */
+    margin-top: 60px;
+    height: calc(100vh - 120px);
 }
 
 header {
@@ -44,10 +44,14 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 58px;
+    height: 60px;
     border-bottom: 1px solid var(--border-color);
     box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
 }
 
 header h1 {
@@ -86,6 +90,7 @@ header h1 {
     flex-grow: 1;
     padding: 1rem;
     background-color: var(--background-color);
+    margin-top: 60px;
 }
 
 .login-box {
@@ -141,7 +146,9 @@ main {
     display: none;
     height: 100%;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 1.5rem 1rem;
+    padding-bottom: 100px;
+    box-sizing: border-box;
 }
 
 .view.active {
@@ -153,12 +160,15 @@ main {
     padding: 0;
 }
 #add-view {
-    padding-bottom: 5rem; /* Space for the save button */
+    padding-bottom: 100px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 #map-view.active {
     display: flex;
     flex-direction: column;
+    padding: 0;
 }
 
 #map-display {
@@ -206,9 +216,12 @@ main {
 .form-row {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
 }
+
 .form-row .form-group {
     flex: 1;
+    min-width: 140px;
 }
 
 .autocomplete-container {
@@ -321,6 +334,14 @@ nav {
     background-color: var(--card-bg);
     border-top: 1px solid var(--border-color);
     box-shadow: 0 -1px 3px rgba(0,0,0,0.02);
+
+    /* Ajouts pour la fixité */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px; /* Hauteur explicite */
+    z-index: 1000;
 }
 
 nav button {
